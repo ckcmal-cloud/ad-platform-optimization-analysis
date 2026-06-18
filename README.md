@@ -95,9 +95,10 @@
 
 ## SQL 재설계 (보완 프로젝트)
 > 주요 분석 로직을 SQL 기반 데이터 파이프라인으로 재구성하며 SQL 활용 역량 학습
+
 > 기존 Python 기반 탐색적 분석(EDA) 로직을 바탕으로 원천 로그 통합, 어뷰징 탐지, KPI 집계, 추천용 데이터 마트 생성 과정을 단계별 SQL로 구현
 
-### Pipeline
+### 파이프라인 (Pipeline)
 01_source_integration.sql 
 → 02_fraud_detection.sql 
 → 03_fraud_dashboard_mart.sql 
