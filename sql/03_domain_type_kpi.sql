@@ -1,8 +1,4 @@
--- =========================================================================
--- 03_domain_type_kpi.sql
--- 목적: 비용 정제가 완료된 광고 로그 데이터를 기반으로 (Python 원본과 동일하게 필터 없이),
---       도메인(Domain) 및 광고유형(Type) 단위의 성과 지표(KPI)를 도출합니다.
--- =========================================================================
+-- 목적: 비용 정제가 완료 광고 로그 기반 (Python 원본과 동일하게 필터 없이), 도메인(Domain) 및 광고유형(Type) 단위의 성과 지표(KPI)를 도출
 
 -- 1. 메타 데이터 및 한글 라벨 매핑 처리
 WITH mapped_metadata AS (
@@ -64,7 +60,7 @@ ad_performance_base AS (
 )
 
 -- 4. KPI 지표 요약 조회
--- [PART A] 도메인별 KPI 분석
+-- 4-1.도메인별 KPI 분석
 SELECT 
     '도메인별 성과' AS gubun,
     domain_name AS category,
@@ -81,7 +77,7 @@ GROUP BY domain_name
 
 UNION ALL
 
--- [PART B] 광고유형별 KPI 분석
+-- 4-2. 광고유형별 KPI 분석
 SELECT 
     '광고유형별 성과' AS gubun,
     type_name AS category,
