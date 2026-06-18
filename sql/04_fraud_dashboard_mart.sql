@@ -1,9 +1,5 @@
--- =========================================================================
--- 04_fraud_dashboard_mart.sql
--- 목적: 어뷰징 탐지 결과(fraud_detection_results)를 매체, 도메인, 광고유형, 일별로 집계하여
---       어뷰징 현황 및 매출 손실액(Loss)을 모니터링할 수 있는 대시보드 마트를 생성합니다.
--- 유래: 02_fraud_detection_pipeline.ipynb의 "4-1. 도메인 오염도", "6. 매체 사례", "5. 8월 이상신호" 집계 기준 반영
--- =========================================================================
+-- 목적: 어뷰징 탐지 결과(fraud_detection_results)를 매체, 도메인, 광고유형, 일별로 집계 어뷰징 현황 및 매출 손실액(Loss)을 모니터링할 수 있는 대시보드 마트 생성
+-- 참고: 02_fraud_detection_pipeline.ipynb의 "4-1. 도메인 오염도", "6. 매체 사례", "5. 8월 이상신호" 집계 기준 반영
 
 CREATE TABLE mart_fraud_dashboard AS
 WITH metadata AS (
@@ -34,9 +30,9 @@ WITH metadata AS (
 )
 SELECT 
     f.click_date,
-    -- 1. 매체별 집계 (Python Line 1721-1725: loss_by_media 기준)
+    -- 1. 매체별 집계
     f.mda_idx AS media_idx,
-    -- 2. 도메인 및 광고유형별 집계 (Python Line 775-782: type_sum, Line 829-837: domain_sum 기준)
+    -- 2. 도메인 및 광고유형별 집계
     m.domain_name,
     m.type_name,
     
@@ -45,12 +41,12 @@ SELECT
     SUM(CASE WHEN f.rwd_cost > 0 THEN 1 ELSE 0 END) AS total_conversions,
     SUM(f.earn_cost) AS total_revenue,
     
-    -- 4. 어뷰징 유형별 집계 플래그 합산 (Python Line 778-781: ctit_abnormal_rows 등 기준)
+    -- 4. 어뷰징 유형별 집계 플래그 합산
     SUM(f.ctit_error) AS ctit_error_count,
     SUM(f.is_device_error) AS device_error_count,
     SUM(f.is_click_error) AS click_error_count,
     
-    -- 5. 최종 어뷰징 확정 건수 및 손실액 집계 (Python Line 743-744, Line 1724 기준)
+    -- 5. 최종 어뷰징 확정 건수 및 손실액 집계
     SUM(CASE WHEN f.row_label = '어뷰징 확정' THEN 1 ELSE 0 END) AS total_fraud_count,
     SUM(f.fraud_loss) AS total_fraud_loss,
     
