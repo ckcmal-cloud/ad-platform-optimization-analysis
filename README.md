@@ -92,3 +92,25 @@
 ## Streamlit Dashboard
 - [어뷰징 대시보드](https://ad-platform-optimization-analysis-yc9jv4rjfj4brcsz2aanxh.streamlit.app/)
 - [광고 추천 전략 대시보드](https://ad-platform-optimization-analysis-pnhajxtjbc23gh6ecpqejz.streamlit.app/)
+
+## SQL 재설계 (보완 프로젝트)
+- 주요 분석 로직을 SQL 기반 데이터 파이프라인으로 재구성하며 SQL 활용 역량 학습
+- 기존 Python 기반 탐색적 분석(EDA) 로직을 바탕으로 원천 로그 통합, 어뷰징 탐지, KPI 집계, 추천용 데이터 마트 생성 과정을 단계별 SQL로 구현
+
+> Pipeline
+> 01_source_integration.sql → 02_fraud_detection.sql → 03_fraud_dashboard_mart.sql → 04_domain_type_kpi.sql → 05_ad_recommendation_mart.sql
+
+구현 내용
+- 광고 참여 로그와 적립 로그 통합
+- CTIT 및 IP 기반 어뷰징 탐지
+- 도메인별 KPI 집계
+- 추천용 데이터 마트 생성
+- CTE 및 Window Function 활용
+- JOIN Fan-out 방지를 위한 집계 구조 설계
+
+학습 내용
+- Python 분석 로직의 SQL 재구성
+- 데이터 Grain 관리
+- Window Function 활용
+- KPI 산출 로직 구현
+- 데이터 정합성을 고려한 SQL 설계
