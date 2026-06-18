@@ -1,11 +1,5 @@
--- =========================================================================
--- 05_ad_recommendation_mart.sql
--- 목적: 어뷰징이 제외된 정상 집행 성과를 바탕으로, 공급 광고 대비 실제 반응률(Response Rate),
---       전환율(CVR), 전환당 단가(CPA) 및 운영 효율성을 종합 분석하여 매체별/광고주별 
---       최적의 광고 조합을 추천하는 마트를 생성합니다.
--- 유래: 03_domain_optimization_analysis.ipynb의 "2. 광고 반응 현황", "공급 광고 유형", 
---       "통합 광고 성과 테이블 생성(total_df)" 및 추천 전략 기준 반영
--- =========================================================================
+-- 목적: 어뷰징이 제외 정상 집행 성과를 바탕으로, 공급 광고 대비 실제 반응률(Response Rate),전환율(CVR), 전환당 단가(CPA) 및 운영 효율성을 종합 분석하여 매체별/광고주별 최적의 광고 조합을 추천하는 마트 생성
+-- 참고: 03_domain_optimization_analysis.ipynb의 "2. 광고 반응 현황", "공급 광고 유형", "통합 광고 성과 테이블 생성(total_df)" 및 추천 전략 기준 반영
 
 CREATE TABLE mart_ad_recommendation AS
 WITH metadata AS (
@@ -38,7 +32,7 @@ WITH metadata AS (
     FROM ad_meta
 ),
 
--- 광고별(ads_idx) 정상 클릭 실적 집계 (Python Line 313-318: click_ad 기준)
+-- 광고별(ads_idx) 정상 클릭 실적 집계 
 cleaned_click_ad AS (
     SELECT 
         ads_idx,
@@ -50,7 +44,7 @@ cleaned_click_ad AS (
     GROUP BY ads_idx
 ),
 
--- 광고별(ads_idx) 정상 전환 및 비용 실적 집계 (Python Line 319-325: conv_ad 기준)
+-- 광고별(ads_idx) 정상 전환 및 비용 실적 집계
 cleaned_conv_ad AS (
     SELECT 
         ads_idx,
@@ -63,7 +57,7 @@ cleaned_conv_ad AS (
     GROUP BY ads_idx
 ),
 
--- 개별 광고단위 통합 성과 테이블 구축 (Python Line 327-336: total_df 생성 로직 반영)
+-- 개별 광고단위 통합 성과 테이블 구축
 ad_performance_detail AS (
     SELECT 
         m.ads_idx,
@@ -76,7 +70,7 @@ ad_performance_detail AS (
         COALESCE(v.conversion_count, 0) AS conversion_count,
         COALESCE(v.total_cost, 0) AS total_cost,
         
-        -- 운영 일수 연산 (Python Line 333-335: operation_days 계산)
+        -- 운영 일수 연산
         CASE 
             WHEN c.first_click IS NOT NULL AND v.first_conv IS NOT NULL THEN
                 DATEDIFF(
@@ -101,7 +95,7 @@ SELECT
     type_name,
     COUNT(ads_idx) AS total_supplied_ads,
     
-    -- 반응 광고 수 및 비율 (Python Line 330, Line 358-364: response 분석 기준)
+    -- 반응 광고 수 및 비율
     SUM(CASE WHEN click_count > 0 OR conversion_count > 0 THEN 1 ELSE 0 END) AS responded_ads_count,
     ROUND(SUM(CASE WHEN click_count > 0 OR conversion_count > 0 THEN 1 ELSE 0 END) * 100.0 / COUNT(ads_idx), 2) AS response_rate_pct,
     
@@ -110,7 +104,7 @@ SELECT
     SUM(conversion_count) AS total_conversions,
     SUM(total_cost) AS total_spent,
     
-    -- CVR & CPA (Python Line 331-332: cvr, cpconv 계산 기준)
+    -- CVR & CPA
     ROUND(SUM(conversion_count) * 100.0 / NULLIF(SUM(click_count), 0), 2) AS avg_cvr_pct,
     ROUND(SUM(total_cost) / NULLIF(SUM(conversion_count), 0), 2) AS avg_cpa,
     
